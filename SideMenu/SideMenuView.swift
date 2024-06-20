@@ -20,11 +20,12 @@ struct SideMenuView<SideView: View, MainView: View>: View {
     let sideView: SideView
     let mainView: MainView
     let sideMenuWidth: CGFloat
+    let bufferOffset = 100.0
     @State private var dragAmount: CGFloat
     
     init(sideMenuWidth: CGFloat, @ViewBuilder sidebar: ()->SideView, @ViewBuilder content: ()->MainView) {
         self.sideMenuWidth = sideMenuWidth
-        self.dragAmount = -sideMenuWidth - 60.0
+        self.dragAmount = -sideMenuWidth - bufferOffset
         sideView = sidebar()
         mainView = content()
     }
@@ -33,19 +34,19 @@ struct SideMenuView<SideView: View, MainView: View>: View {
         
         ZStack(alignment: .leading) {
             mainView
-            if dragAmount > -sideMenuWidth {
+            if dragAmount > -sideMenuWidth - bufferOffset {
                 Color(.darkGray)
                     .edgesIgnoringSafeArea(.all)
                     .opacity(0.6 + (dragAmount/sideMenuWidth))
                     .onTapGesture {
                         if dragAmount == 0 {
-                            dragAmount = -sideMenuWidth - 60.0
+                            dragAmount = -sideMenuWidth - bufferOffset
                         }
                     }
                     .gesture(
                         DragGesture()
                             .onChanged {
-                                if $0.translation.width <= 0 && $0.translation.width > -sideMenuWidth  {
+                                if $0.translation.width <= 0 && $0.translation.width > -sideMenuWidth - bufferOffset  {
                                     dragAmount = $0.translation.width
                                 }
                             }
@@ -54,7 +55,7 @@ struct SideMenuView<SideView: View, MainView: View>: View {
                                     dragAmount = 0
                                 }
                                 else {
-                                    dragAmount = -sideMenuWidth - 60.0
+                                    dragAmount = -sideMenuWidth - bufferOffset
                                 }
                             })
                     )
@@ -79,7 +80,7 @@ struct SideMenuView<SideView: View, MainView: View>: View {
                             dragAmount = 0
                         }
                         else {
-                            dragAmount = -sideMenuWidth - 60.0
+                            dragAmount = -sideMenuWidth - bufferOffset
                         }
                     })
             )
